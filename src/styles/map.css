@@ -1,0 +1,9 @@
+.map {
+  height: 75vh;
+  width: 75vw;
+}
+
+.map-container {
+  height: 100%;
+  width: 100%;
+}

@@ -3,6 +3,7 @@ import "./App.css";
 // import products from "./products.json";
 import Product from "./components/Product.jsx";
 import Header from "./components/header";
+import Map from "./components/Map";
 
 
 function App() {
@@ -14,7 +15,7 @@ function App() {
     </div>
     <div className="container">
 
-        <Product />
+        <Map />
 
       </div>
   
