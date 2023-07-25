@@ -1,0 +1,39 @@
+.headercontainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eaeaea;  
+  background-color: #f1e1e1;
+}
+
+.headercontainer h1 {
+  /* justify-self: center; */
+  
+}
+
+.headercontainer .headertotal {
+  /* border: 1px solid red; */
+}
+
+.headertitle {
+  margin-left: 2%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  /* border: 1px solid blue; */
+}
+
+.headertotal {
+  margin-right: 2%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.headertitle a {
+ text-decoration: none;
+ color: rgb(0, 0, 0)
+}
