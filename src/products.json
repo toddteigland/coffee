@@ -1,0 +1,15 @@
+[
+{
+"title" : "black coffee",
+"id": "black_coffee",
+"description": "black coffee, nothing added",
+"price:": "3.00"
+},
+{
+"title" : "latte",
+"id": "latte",
+"description": "black coffee, frothed milk",
+"price:": "4.00"
+}
+
+]
