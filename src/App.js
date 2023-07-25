@@ -1,12 +1,12 @@
 import logo from "./logo.svg";
 import "./App.css";
-import products from "./products.json";
-import styles from "./styles/home.css";
+// import products from "./products.json";
+import Product from "./components/Product.jsx";
 
 function App() {
   return (
     <div>
-      <div className="App">
+      {/* <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <p>
@@ -21,12 +21,11 @@ function App() {
             Learn React
           </a>
         </header>
-      </div>
-      <div className={styles.grid}>
+      </div> */}
+      {/* <div className="grid">
         {products.map((product) => {
           return (
-            <div
-              key={product.id} className={styles.card}>
+            <div key={product.id} className="card">
               <h3>{product.title}</h3>
               <p>{product.description}</p>
               <p>${product.price}</p>
@@ -36,7 +35,10 @@ function App() {
             </div>
           );
         })}
-      </div>
+      </div> */}
+
+      <Product />
+
     </div>
   );
 }
