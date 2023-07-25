@@ -5,6 +5,11 @@ import products from "../products.json";
 export default function Product() {
 
   return (
+
+    <div>
+      <div>
+        <h1>Products</h1>
+      </div>
     <div className="grid">
     {products.map((product) => {
       return (
@@ -20,6 +25,8 @@ export default function Product() {
       );
     })}
   </div>
+    
+    </div>
   )
 
 }

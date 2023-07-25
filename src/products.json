@@ -19,5 +19,12 @@
   "description": "Black coffee, frothed milk, chocolate",
   "price": "4.50",
   "image": "https://images.immediate.co.uk/production/volatile/sites/2/2021/11/Mocha-1fc71f7.png?resize=960,872"
+},
+{
+  "title" : "London Fog",
+  "id": "london_fog",
+  "description": "Steeped Earl Grey Tea, frothed milk, vanilla",
+  "price": "4.50",
+  "image": "https://www.ohhowcivilized.com/wp-content/uploads/london-fog-drink-recipe.jpg"
 }
 ]
