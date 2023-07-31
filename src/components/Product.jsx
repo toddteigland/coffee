@@ -1,4 +1,4 @@
-import '../styles/home.css';
+import '../styles/product.css';
 import products from "../products.json";
 
 
@@ -6,10 +6,10 @@ export default function Product() {
 
   return (
 
-    <div>
-      <div>
+    <div className='productcontainer'>
+
         <h1>Products</h1>
-      </div>
+
     <div className="grid">
     {products.map((product) => {
       return (

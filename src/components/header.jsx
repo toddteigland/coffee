@@ -9,9 +9,9 @@ export default function Header() {
 
   const options = [
     { label: 'Store Locator', value: 'storelocator' },
-    { label: 'Other Options', value: 'otheroptions'},
-    { label: 'Other Options', value: 'otheroptions'},
-    { label: 'Other Options', value: 'otheroptions'},
+    { label: 'Other Options 1', value: 'otheroptions1'},
+    { label: 'Other Options 2', value: 'otheroptions2'},
+    { label: 'Other Options 3', value: 'otheroptions3'},
     { label: 'Sign Out', value: 'signout' },
   ];
 

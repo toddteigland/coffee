@@ -1,9 +1,27 @@
+.selectcontainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid #eaeaea;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  /* border: 2px solid red; */
+
+}
+
 .map {
   height: 75vh;
   width: 75vw;
+  padding: 10px;
+  background-color: #f1e1e1;
+  /* border: 2px solid green; */
+
 }
 
 .map-container {
   height: 100%;
   width: 100%;
+  /* border: 2px solid blue; */
+
 }
