@@ -1,0 +1,41 @@
+/* Dropdown.css */
+.dropdown-container {
+  position: relative;
+  width: 50px;
+}
+
+.dropdown-header {
+  cursor: pointer;
+  padding: 10px;
+  background-color: #d8a5a5;
+  border: 1px solid #ccc;
+}
+
+.dropdown-options {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+  background-color: #d8a5a5;
+  border: 1px solid #ccc;
+  display: none; /* Initially hide the options */
+}
+
+/* Show the options when the 'show' class is added */
+.dropdown-options.show {
+  display: block;
+  width: 200px;
+  margin-top: 20px;
+
+}
+
+.dropdown-options li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.dropdown-options li:hover {
+  background-color: #f0f0f0;
+}
