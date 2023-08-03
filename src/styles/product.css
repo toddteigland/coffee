@@ -1,4 +1,4 @@
-
+@import 'colors.css';
 
 .productcontainer {
   min-height: 100vh;
@@ -43,7 +43,7 @@
   color: #025fc9;
   /* border-color: #2362aa; */
   box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.2);
-  background-color: #f1e1e1;
+  background-color: var(--primary-color);
 }
 
 .card h3 {

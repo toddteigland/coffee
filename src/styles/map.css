@@ -1,11 +1,13 @@
+@import 'colors.css';
+
 .selectcontainer {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border-bottom: 1px solid #eaeaea;
+  /* border-bottom: 1px solid #eaeaea; */
   padding-bottom: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 10px;  
   /* border: 2px solid red; */
 
 }
@@ -14,7 +16,7 @@
   height: 75vh;
   width: 75vw;
   padding: 10px;
-  background-color: #f1e1e1;
+  background-color: var(--primary-color);
   /* border: 2px solid green; */
 
 }
