@@ -7,6 +7,9 @@ import {
 import { useMemo, useEffect, useState } from "react";
 import axios from "axios";
 import "../styles/map.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCoffee } from "@fortawesome/free-solid-svg-icons";
+import mapstyles from "../styles/mapstyles";
 
 export default function Map() {
   const { isLoaded, loadError } = useLoadScript({
@@ -46,12 +49,16 @@ export default function Map() {
     }
   }, [mapInstance, center]);
 
-  const handleMarkerClick = (id, lat, lng ) => {
+  const handleMarkerClick = (id, lat, lng) => {
     mapRef?.panTo({ lat, lng });
     setInfoWindowData({ id });
-    console.log("infowindowdata: ", infoWindowData  );
+    console.log("infowindowdata: ", infoWindowData);
     setIsOpen(true);
   };
+  
+  const handleMapClick = () => {
+    setIsOpen(false);
+  }
 
   return (
     <div className="selectcontainer">
@@ -66,14 +73,18 @@ export default function Map() {
         ) : (
           <GoogleMap
             mapContainerClassName="map-container"
+            onClick={{ handleMapClick }}
             center={center}
             zoom={13}
-            mapTypeId="roadmap"
+            // mapTypeId="styled_map"
             onLoad={(map) => setMapInstance(map)}
+            mapId="4e6f57430e492946"
+            options={{ styles: mapstyles }}
           >
             {/* Render markers for coffee shops */}
             {coffeeShops.map((shop) => (
               <Marker
+                icon={"http://maps.google.com/mapfiles/kml/pal2/icon54.png"}
                 key={shop.place_id}
                 position={{
                   lat: shop.geometry.location.lat,
@@ -81,7 +92,11 @@ export default function Map() {
                 }}
                 title={shop.name}
                 onClick={() => {
-                  handleMarkerClick(shop.place_id, shop.geometry.location.lat, shop.geometry.location.lng);
+                  handleMarkerClick(
+                    shop.place_id,
+                    shop.geometry.location.lat,
+                    shop.geometry.location.lng
+                  );
                 }}
               >
                 {isOpen && infoWindowData?.id === shop.place_id && (
@@ -89,8 +104,16 @@ export default function Map() {
                     onCloseClick={() => {
                       setIsOpen(false);
                     }}
+                    onClick={() => {
+                      setIsOpen(false);
+                    }}
                   >
-                    <h3>{shop.name}</h3>
+                    <div>
+                      <h2>{shop.name}</h2>
+                      <a href="#">
+                        <h4>Click Here to Order</h4>
+                      </a>
+                    </div>
                   </InfoWindow>
                 )}
               </Marker>
