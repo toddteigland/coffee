@@ -9,6 +9,8 @@
   padding: 10px;
   background-color: #d8a5a5;
   border: 1px solid #ccc;
+  border-radius: 10px;
+
 }
 
 .dropdown-options {
@@ -28,6 +30,7 @@
   display: block;
   width: 200px;
   margin-top: 20px;
+  border-radius: 10px;
 
 }
 

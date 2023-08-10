@@ -65,11 +65,13 @@ img {
   object-fit: cover;
   border-radius: 5px;
 }
+ .buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+ }
 
-h1 {
-  /* margin-left: 100px; */
-}
-
+ 
 @media (max-width: 600px) {
   .grid {
     width: 100%;

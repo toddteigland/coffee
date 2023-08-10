@@ -40,3 +40,12 @@
  text-decoration: none;
  color: rgb(0, 0, 0)
 }
+
+.cartLink {
+  text-decoration: none;
+  color: inherit;
+}
+
+.cartLink :hover {
+  color: blue;
+}

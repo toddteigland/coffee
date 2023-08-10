@@ -1,0 +1,36 @@
+@import 'colors.css';
+
+.cartContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cartList {
+  border: 1px solid #eaeaea;
+  width: 40%;
+  border-radius: 10px;
+  box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.2);
+  background-color: var(--primary-color);
+}
+
+.cartItem {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0 40px 15px 0;
+  border-bottom: 2px solid #eaeaea;
+}
+
+.itemAndRemove {
+  
+}
+.remove {
+  text-decoration: underline;
+  color: blue;
+  border: none;
+  background-color: inherit;
+}
+.remove:hover {
+  color: red;
+}

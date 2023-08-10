@@ -4,25 +4,26 @@ import {
   useLoadScript,
   InfoWindow,
 } from "@react-google-maps/api";
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useEffect, useState, useContext } from "react";
 import axios from "axios";
 import "../styles/map.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCoffee } from "@fortawesome/free-solid-svg-icons";
 import mapstyles from "../styles/mapstyles";
+import { Link } from "react-router-dom";
+import { currentStoreContext } from "../App";
 
 export default function Map() {
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: "AIzaSyAnpVMayNLao-lvX0H3_rOl-MbjcKAuaCw",
   });
 
-  const center = useMemo(() => ({ lat: 49.246292, lng: -123.116226 }), []);
+  const center = useMemo(() => ({ lat: 49.263805, lng: -122.882565 }), []);
   const [mapInstance, setMapInstance] = useState(null);
   const [mapLoaded, setMapLoaded] = useState(false); // Track map loading state
   const [coffeeShops, setCoffeeShops] = useState([]);
   const [infoWindowData, setInfoWindowData] = useState();
   const [mapRef, setMapRef] = useState();
   const [isOpen, setIsOpen] = useState(false);
+  const [currentStore, setCurrentStore] = useContext(currentStoreContext);
 
   useEffect(() => {
     if (isLoaded && !mapLoaded) {
@@ -40,7 +41,6 @@ export default function Map() {
         .get(apiUrl)
         .then((response) => {
           const coffeeShops = response.data.results;
-          console.log("COFFEE SHOP DATA: ", coffeeShops);
           setCoffeeShops(coffeeShops);
         })
         .catch((error) => {
@@ -51,14 +51,17 @@ export default function Map() {
 
   const handleMarkerClick = (id, lat, lng) => {
     mapRef?.panTo({ lat, lng });
-    setInfoWindowData({ id });
-    console.log("infowindowdata: ", infoWindowData);
     setIsOpen(true);
+    setInfoWindowData({ id });
   };
-  
+
   const handleMapClick = () => {
     setIsOpen(false);
-  }
+  };
+
+  const handleOrderHereClick = (shopName, shopAddress) => {
+    setCurrentStore({Name: shopName, Address: shopAddress});
+  };
 
   return (
     <div className="selectcontainer">
@@ -73,7 +76,7 @@ export default function Map() {
         ) : (
           <GoogleMap
             mapContainerClassName="map-container"
-            onClick={{ handleMapClick }}
+            onClick={() => handleMapClick()}
             center={center}
             zoom={13}
             // mapTypeId="styled_map"
@@ -110,9 +113,15 @@ export default function Map() {
                   >
                     <div>
                       <h2>{shop.name}</h2>
-                      <a href="#">
-                        <h4>Click Here to Order</h4>
-                      </a>
+                      <h3>{shop.vicinity}</h3>
+                      <Link
+                        to="/Products"
+                        onClick={() =>
+                          handleOrderHereClick(shop.name, shop.vicinity)
+                        }
+                      >
+                        Click Here to Order
+                      </Link>
                     </div>
                   </InfoWindow>
                 )}
