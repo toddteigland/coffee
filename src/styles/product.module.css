@@ -34,16 +34,18 @@
   text-decoration: none;
   border: 1px solid #eaeaea;
   border-radius: 10px;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  background-color: var(--primary-color);
 }
 
 .card:hover,
 .card:focus,
 .card:active {
-  color: #025fc9;
+  color: #024ca1;
   /* border-color: #2362aa; */
   box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.2);
-  background-color: var(--primary-color);
+  background-color: var(--secondary-color);
+  transform: translateY(-5px);
+  transition: 250ms;
 }
 
 .card h3 {
@@ -71,7 +73,35 @@ img {
   justify-content: space-between;
  }
 
- 
+ .selectStore-popup {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background-color: var(--secondary-color);
+  border: 1px solid #eaeaea;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+}
+
+.itemAdded-popup {
+  width: 200px;
+  border: 1px solid #eaeaea;
+  border-radius: 10px;
+  background-color: var(--secondary-color);
+  padding: 0.1rem;
+  text-align: center;
+  position: fixed;
+  top: 12%;
+  right: 2%;
+}
+
+
 @media (max-width: 600px) {
   .grid {
     width: 100%;

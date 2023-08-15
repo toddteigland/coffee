@@ -8,6 +8,10 @@
   border-bottom: 1px solid #eaeaea;  
   /* background-color: blue; */
   background-color: var(--primary-color);
+  position: fixed;
+  top: 0%;
+  width: 100%;
+  margin-bottom: 40px;
 }
 
 .headercontainer h1 {
@@ -48,4 +52,7 @@
 
 .cartLink :hover {
   color: blue;
+  transform: translate(-5px);
+  transition: 250ms;
+  text-decoration: underline;
 }

@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import '../styles/dropdown.css'; // Create a CSS file to style the dropdown
+import { Link } from 'react-router-dom';
+
+import styles from '../styles/dropdown.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleDoubleDown} from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
 
 
 export default function Dropdown ({ options }) {
@@ -26,16 +27,16 @@ export default function Dropdown ({ options }) {
   }, []);
 
   return (
-    <div className="dropdown-container" ref={dropdownRef}>
+    <div className={styles.dropdownContainer} ref={dropdownRef}>
 
       <div
-        className="dropdown-header"
+        className={styles.dropdownHeader}
         onClick={() => setShowOptions((prevShowOptions) => !prevShowOptions)}
       >
          <FontAwesomeIcon icon={faAngleDoubleDown} size="2x" />
       </div>
       
-      <ul className={`dropdown-options ${showOptions ? 'show' : ''}`}>
+      <ul className={`${styles.dropdownOptions} ${showOptions ? styles.show : ''}`}>
         {options.map((option) => (
           <li key={option.value} 
           onClick={() => handleOptionClick(option)}

@@ -6,7 +6,7 @@ import {
 } from "@react-google-maps/api";
 import { useMemo, useEffect, useState, useContext } from "react";
 import axios from "axios";
-import "../styles/map.css";
+import styles from "../styles/map.module.css";
 import mapstyles from "../styles/mapstyles";
 import { Link } from "react-router-dom";
 import { currentStoreContext } from "../App";
@@ -64,9 +64,9 @@ export default function Map() {
   };
 
   return (
-    <div className="selectcontainer">
+    <div className={styles.selectContainer}>
       <h1>Select Coffee Shop</h1>
-      <div className="map">
+      <div className={styles.map}>
         {!isLoaded ? (
           loadError ? (
             <h1>Error loading map</h1>
@@ -75,7 +75,7 @@ export default function Map() {
           )
         ) : (
           <GoogleMap
-            mapContainerClassName="map-container"
+            mapContainerClassName={styles.mapContainer}
             onClick={() => handleMapClick()}
             center={center}
             zoom={13}

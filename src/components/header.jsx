@@ -1,4 +1,4 @@
-import styles from "../styles/header.css";
+import styles from "../styles/header.module.css";
 import { useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
@@ -27,19 +27,17 @@ export default function Header() {
   };
 
   return (
-    <div>
-      <header className="headercontainer">
-        <div className="headertitle">
+      <header className={styles.headercontainer}>
+        <div className={styles.headertitle}>
           <Dropdown options={options} onSelect={handleOptionSelect} />
           <h1>On the Run</h1>
         </div>
-        <Link to="/Cart" className="cartLink">
-          <div className="headertotal">
+        <Link to="/Cart" className={styles.cartLink}>
+          <div className={styles.headertotal}>
             <FontAwesomeIcon icon={faShoppingCart} />
             <p>Cart Total: ${totalPrice.toFixed(2)}</p>
           </div>
         </Link>
       </header>
-    </div>
   );
 }

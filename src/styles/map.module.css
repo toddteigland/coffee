@@ -1,6 +1,6 @@
 @import 'colors.css';
 
-.selectcontainer {
+.selectContainer {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -21,7 +21,7 @@
 
 }
 
-.map-container {
+.mapContainer {
   height: 100%;
   width: 100%;
   /* border: 2px solid blue; */

@@ -1,44 +1,55 @@
+@import 'colors.css';
+
+
 /* Dropdown.css */
-.dropdown-container {
+.dropdownContainer {
   position: relative;
   width: 50px;
 }
 
-.dropdown-header {
+.dropdownHeader {
   cursor: pointer;
   padding: 10px;
-  background-color: #d8a5a5;
+  background-color: var(--secondary-color);
   border: 1px solid #ccc;
   border-radius: 10px;
-
 }
 
-.dropdown-options {
+.dropdownContainer :hover {
+  transform: translateY(-5px);
+  transition: 250ms;
+  
+}
+.dropdownOptions {
   list-style: none;
   padding: 0;
   margin: 0;
   position: absolute;
   width: 100%;
   z-index: 1;
-  background-color: #d8a5a5;
+  background-color: var(--secondary-color);
   border: 1px solid #ccc;
   display: none; /* Initially hide the options */
+
+  overflow: hidden;
 }
 
 /* Show the options when the 'show' class is added */
-.dropdown-options.show {
+.dropdownOptions.show {
   display: block;
   width: 200px;
   margin-top: 20px;
   border-radius: 10px;
-
+  
+  transition: max-height 0.7s ease;
+  max-height: 200px;
 }
 
-.dropdown-options li {
+.dropdownOptions li {
   padding: 10px;
   cursor: pointer;
 }
 
-.dropdown-options li:hover {
+.dropdownOptions li:hover {
   background-color: #f0f0f0;
 }
