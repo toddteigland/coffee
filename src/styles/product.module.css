@@ -2,13 +2,17 @@
 
 .productcontainer {
   min-height: 100vh;
-  padding: 0 0.5rem;
+  padding: 0 0.2rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   /* border: 2px solid red; */
   border-bottom: 1px solid #eaeaea;
+  background-color: var(--background-color);
+  background-image: var(--background-image);
+  color: var(--color);
+  font-family: 'montserrat';
 }
 
 .grid {
@@ -19,7 +23,7 @@
   flex-wrap: wrap;
   /* max-width: 1200px; */
   max-width: 85%;
-  margin-top: 3rem;
+  margin-top: 1rem;
 
 }
 

@@ -4,11 +4,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: var(--background-color);
+  background-image: var(--background-image);
+  min-height: 100vh;
+  color: var(--color);
+  font-family: 'montserrat';
 }
 
 .cartList {
-  border: 1px solid #eaeaea;
+  border: 1px solid var(--bordercolor);
   width: 40%;
+  min-height: 50px;
   border-radius: 10px;
   box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.2);
   background-color: var(--primary-color);
@@ -18,13 +24,11 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 0 40px 15px 0;
+  padding: 7px 40px 7px 0;
   border-bottom: 2px solid #eaeaea;
+  font-size: large;
 }
 
-.itemAndRemove {
-  
-}
 .remove {
   text-decoration: underline;
   color: blue;
@@ -33,4 +37,18 @@
 }
 .remove:hover {
   color: red;
+}
+
+.link:visited {
+/* color: var(--secondary-color); */
+color: pink;
+}
+.link {
+  /* color: var(--secondary-color); */
+  color: pink;
+  text-decoration: none;
+}
+.link:hover {
+  color: pink;
+  text-decoration: underline;
 }

@@ -5,11 +5,15 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* border-bottom: 1px solid #eaeaea; */
   padding-bottom: 10px;
   margin-bottom: 10px;  
-  /* border: 2px solid red; */
-
+  background-color: var(--background-color);
+  background-image: var(--background-image);
+  z-index: 0;
+  font-family: 'montserrat';
+}
+.selectContainer h1 {
+  color: var(--color);
 }
 
 .map {
@@ -18,12 +22,14 @@
   padding: 10px;
   background-color: var(--primary-color);
   /* border: 2px solid green; */
-
+  z-index: 0;
 }
 
 .mapContainer {
   height: 100%;
   width: 100%;
   /* border: 2px solid blue; */
+  z-index: 0;
+
 
 }

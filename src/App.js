@@ -1,12 +1,14 @@
 import styles from "./styles/App.module.css";
-import { Routes, Route, Navigate } from "react-router";
+import { Routes, Route, Navigate, Router } from "react-router";
 import { useState, createContext } from "react";
 
 import Cart from "./pages/Cart";
-import Header from "./components/header";
+import Header from "./partials/header";
 import Home from "./pages/Home";
 import Map from "./pages/Map";
 import Product from "./pages/Product.jsx";
+import ScrollToTop from "./components/ScrollToTop";
+import Footer from "./partials/footer";
 
 export const currentStoreContext = createContext();
 export const cartContext = createContext();
@@ -21,13 +23,18 @@ export default function App() {
         <cartContext.Provider value={[currentOrder, setCurrentOrder]}>
           <Header />
 
-          <Routes>
-            <Route path="/" element={<Navigate to="/home" />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/products" element={<Product />} />
-            <Route path="/storelocator" element={<Map />} />
-            <Route path="/cart" element={<Cart />} />
-          </Routes>
+          <ScrollToTop>
+            <Routes>
+              <Route path="/" element={<Navigate to="/home" />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/products" element={<Product />} />
+              <Route path="/storelocator" element={<Map />} />
+              <Route path="/cart" element={<Cart />} />
+            </Routes>
+          </ScrollToTop>
+
+          <Footer />
+          
         </cartContext.Provider>
       </currentStoreContext.Provider>
     </div>

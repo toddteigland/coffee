@@ -3,10 +3,11 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* padding-top: 50px; */
+  z-index: 0;
 }
 
 .videoContainer {
   width: 100%;
   height: auto;
+  z-index: -1;
 }

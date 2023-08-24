@@ -1,9 +1,10 @@
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-import styles from "../styles/product.module.css";
-import products from "../products.json";
-import { cartContext, currentStoreContext } from "../App";
 import { v4 as uuidv4 } from "uuid";
+
+import styles from "../styles/product.module.css";
+import { cartContext, currentStoreContext } from "../App";
+import products from "../products.json";
 import Customize from "../components/Customize";
 
 export default function Product() {
@@ -34,7 +35,6 @@ export default function Product() {
     <div className={styles.productcontainer}>
       <h1>{currentStore?.Name}</h1>
       <h2>{currentStore?.Address}</h2>
-
       <div className={styles.grid}>
         {products.map((product) => {
           return (

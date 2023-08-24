@@ -1,14 +1,10 @@
-import {
-  GoogleMap,
-  Marker,
-  useLoadScript,
-  InfoWindow,
-} from "@react-google-maps/api";
+import { GoogleMap, Marker, useLoadScript, InfoWindow} from "@react-google-maps/api";
 import { useMemo, useEffect, useState, useContext } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
+
 import styles from "../styles/map.module.css";
 import mapstyles from "../styles/mapstyles";
-import { Link } from "react-router-dom";
 import { currentStoreContext } from "../App";
 
 export default function Map() {
