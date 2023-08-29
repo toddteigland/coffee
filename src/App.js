@@ -11,10 +11,13 @@ import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./partials/footer";
 import Register from "./pages/register";
 import UserRegister from "./pages/UserRegister";
-import BusinessRegister from "./pages/BusinessRegister";
+import StoreRegister from "./pages/StoreRegister";
 import Login from "./pages/Login";
-import { AuthProvider } from "./components/AuthContext";
 import Profile from "./pages/Profile";
+import StoreDashboard from "./pages/StoreDashboard";
+
+import { AuthProvider } from "./components/AuthContext";
+import { StoreProvider } from "./components/StoreContext";
 
 export const currentStoreContext = createContext();
 export const cartContext = createContext();
@@ -26,28 +29,31 @@ export default function App() {
   return (
     <div className={styles.appContainer}>
       <AuthProvider>
-        <currentStoreContext.Provider value={[currentStore, setCurrentStore]}>
-          <cartContext.Provider value={[currentOrder, setCurrentOrder]}>
-            <Header />
+        <StoreProvider>
+          <currentStoreContext.Provider value={[currentStore, setCurrentStore]}>
+            <cartContext.Provider value={[currentOrder, setCurrentOrder]}>
+              <Header />
 
-            <ScrollToTop>
-              <Routes>
-                <Route path="/" element={<Navigate to="/home" />} />
-                <Route path="/home" element={<Home />} />
-                <Route path="/products" element={<Product />} />
-                <Route path="/storelocator" element={<Map />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/user-register" element={<UserRegister />} />
-                <Route path="/business-register" element={<BusinessRegister />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/profile" element={<Profile />} />
-              </Routes>
-            </ScrollToTop>
+              <ScrollToTop>
+                <Routes>
+                  <Route path="/" element={<Navigate to="/home" />} />
+                  <Route path="/home" element={<Home />} />
+                  <Route path="/products" element={<Product />} />
+                  <Route path="/storelocator" element={<Map />} />
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/user-register" element={<UserRegister />} />
+                  <Route path="/store-register" element={<StoreRegister />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/store-dashboard" element={<StoreDashboard />} />
+                </Routes>
+              </ScrollToTop>
 
-            <Footer />
-          </cartContext.Provider>
-        </currentStoreContext.Provider>
+              <Footer />
+            </cartContext.Provider>
+          </currentStoreContext.Provider>
+        </StoreProvider>
       </AuthProvider>
     </div>
   );

@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "../styles/form.module.css";
 import loginStyles from "../styles/login.module.css";
+import footerStyles from "../styles/footer.module.css";
 import { useAuth } from "../components/AuthContext";
+import { useStore } from "../components/StoreContext";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 
@@ -9,8 +11,12 @@ import { Link } from "react-router-dom";
 export default function Login() {
   const navigate = useNavigate();
   const { setIsLoggedIn, setUser, user } = useAuth();
+  const { setIsStoreLoggedIn, setStore } = useStore();
+
   const [loginErrorPopup, setLoginErrorPopup] = useState(false);
   const [formData, setFormData] = useState ({});
+  const [isStore, setIsStore] = useState(false); 
+
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -22,39 +28,97 @@ export default function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (!isStore) {
 
-    try {
-      const response = await fetch("http://localhost:8080/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-
-      // Fetch user data from server
-      const userInfoResponse = await fetch(`http://localhost:8080/getUserInfo?email=${formData.email}`);
-      const userInfo = await userInfoResponse.json();
-
-
-        setIsLoggedIn(true);
-        setUser(userInfo);
-        // Successful login, you can redirect or handle accordingly
-        navigate("/products", { replace: true });
-      } else {
-        // Failed login, handle accordingly
-        setLoginErrorPopup(true);
-        console.log("Login failed");
+      try {
+        const response = await fetch("http://localhost:8080/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+        
+        if (response.ok) {
+          
+          // Fetch user data from server
+          const userInfoResponse = await fetch(`http://localhost:8080/getUserInfo?email=${formData.email}`);
+          const userInfo = await userInfoResponse.json();
+          
+          
+          setIsLoggedIn(true);
+          setUser(userInfo);
+          // Successful login, you can redirect or handle accordingly
+          console.log("User Successfully Logged in ", user.email);
+          navigate("/products", { replace: true });
+        } else {
+          // Failed login, handle accordingly
+          setLoginErrorPopup(true);
+          console.log("User Login failed");
+        }
+      } catch (error) {
+        console.error("Error logging User in:", error);
       }
-    } catch (error) {
-      console.error("Error logging in:", error);
+
+    } else {
+
+      try {
+        const response = await fetch("http://localhost:8080/store-login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+
+        if (response.ok) {
+
+          const storeInfoResponse = await fetch(`http://localhost:8080/getStoreInfo?email=${formData.email}`);
+          const storeInfo = await storeInfoResponse.json();
+          setStore(storeInfo);
+          setIsStoreLoggedIn(true);
+        } else {
+          setLoginErrorPopup(true)
+          console.log("Store Login Failed");
+        }
+      } catch (error) {
+        console.error("Error Logging Store in:", error)
+      }
     }
   };
 
+  //LOGIN USER/STORE TOGGLE
+  useEffect(() => {
+    const toggleSwitch = document.getElementById("loginToggle");
+
+    function switchLoginType(e) {
+      const isStoreMode = e.target.checked;
+      setIsStore(isStoreMode);
+      document.getElementById("loginType").innerHTML = isStoreMode ? "Store Login" : "User Login";
+    }
+
+    if (toggleSwitch !== null) {
+      toggleSwitch.addEventListener("change", switchLoginType);
+    }
+
+    return () => {
+      if (toggleSwitch !== null) {
+        toggleSwitch.removeEventListener("change", switchLoginType);
+      }
+    };
+  }, []);
+
   return (
     <div>
+            <div className={footerStyles.themeswitchwrapper}>
+        <label className={footerStyles.themeswitch} htmlFor="loginToggle">
+          <input type="checkbox" id="loginToggle" />
+          <div className={footerStyles.slider}></div>
+        </label>
+        <em id="loginType" className={footerStyles.em}>
+          User Login
+        </em>
+      </div>
       <form className={styles.form} onSubmit={handleSubmit} >
         <label>
           Email:
