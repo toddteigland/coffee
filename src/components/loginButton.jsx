@@ -1,11 +1,10 @@
 import React from "react";
-import { useAuth0 } from "@auth0/auth0-react";
 import styles from "../styles/loginButton.module.css"
+import { Link } from "react-router-dom";
 
 const LoginButton = () => {
-  const { loginWithPopup } = useAuth0();
 
-  return <button className={styles.loginButton} onClick={() => loginWithPopup()}>Log In</button>;
+  return <Link to="/login"><button className={styles.loginButton}>Log In</button></Link>;
 };
 
 export default LoginButton;

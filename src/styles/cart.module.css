@@ -8,7 +8,7 @@
   background-image: var(--background-image);
   min-height: 100vh;
   color: var(--color);
-  font-family: 'montserrat';
+  font-family: 'Montserrat';
 }
 
 .cartList {

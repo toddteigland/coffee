@@ -1,5 +1,6 @@
 @import "colors.css";
 
+
 .footerContainer {
   display: flex;
   flex-direction: row;
@@ -12,11 +13,7 @@
   margin-right: 20px;
 }
 
-.footerContainer :hover {
-  transform: translate(5px);
-  transition: 250ms;
-  background-color: var(--background-color);
-}
+
 
 .themeswitchwrapper {
   display: flex;

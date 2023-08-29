@@ -1,10 +1,12 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 
 import styles from "../styles/cart.module.css";
 import { cartContext, currentStoreContext } from "../App";
+import { useAuth } from "../components/AuthContext";
 
 export default function Cart() {
+  const {user} = useAuth();
   const [currentStore] = useContext(currentStoreContext);
   const [currentOrder, setCurrentOrder] = useContext(cartContext);
   const totalPrice = Object.values(currentOrder).reduce(
@@ -12,18 +14,51 @@ export default function Cart() {
     0.0
   );
 
-  useEffect(() => {
-    console.log("Current Store", currentStore[0]);
-    console.log("Current Order", currentOrder[0]);
-  }, [currentStore, currentOrder]);
-
   const handleRemoveClick = (itemId) => {
     setCurrentOrder((prevOrder) => {
       const updatedOrder = { ...prevOrder };
       delete updatedOrder[itemId];
-      return updatedOrder;
       console.log("UPDATED ORDER: ", updatedOrder);
+      return updatedOrder;
     });
+  };
+
+  const handleSubmitOrder = async (event) => {
+    event.preventDefault();
+    const items = Object.values(currentOrder).map((item) => {
+      return {
+        coffee_type: item.name,  // assuming item.name contains coffee_type
+        size: item.size,  // replace with actual size if exists
+        price: item.price,
+        extras: item.extras // replace with actual extras if exists
+      };
+    });
+    const orderPayload = {
+      userId: user? user.id: null,
+      items: items,
+      storeInfo: currentStore
+    };
+
+    try {
+      const response = await fetch("http://localhost:8080/placeOrder", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderPayload),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log("Order submitted successfully. Order ID:", responseData.orderId);
+        //Empty Cart after submission
+        setCurrentOrder({});
+      } else {
+        console.error("Failed to submit order. Server responded with: ", response.status);
+      }
+    } catch (error) {
+      console.error("An error occurred while submitting order: ", error);
+    }
   };
 
   let cartHeader;
@@ -47,7 +82,11 @@ export default function Cart() {
       </div>
     );
   } else {
-    <h3>{currentStore.Name} Else</h3>;
+    cartHeader = (
+      <div>
+        <h3>{currentStore.Name}</h3>;
+      </div>
+    )
   }
 
   return (
@@ -73,7 +112,8 @@ export default function Cart() {
           </div>
         </ul>
       </div>
-      <p>Total: ${totalPrice.toFixed(2)}</p>
+      <p>Total: <strong>${totalPrice.toFixed(2)}</strong></p>
+      <button onClick={handleSubmitOrder}>Submit Order</button>
     </div>
   );
 }

@@ -1,20 +1,21 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth } from "../components/AuthContext";
 
 import styles from "../styles/header.module.css";
 import Dropdown from "../components/Dropdown";
 import { cartContext } from "../App";
 import LoginButton from "../components/loginButton";
 import LogoutButton from "../components/logoutButton";
+import RegisterButton from "../components/registerButton";
+ 
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 
 export default function Header() {
   const [currentOrder] = useContext(cartContext);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const { isAuthenticated, user } = useAuth0();
+  const { isLoggedIn, user } = useAuth();
 
   const totalPrice = Object.values(currentOrder).reduce(
     (acc, item) => acc + parseFloat(item.price),
@@ -43,26 +44,16 @@ export default function Header() {
         </Link>
       </div>
 
-      {/* <div className={styles.themeswitchwrapper}>
-        <label className={styles.themeswitch} htmlFor="checkbox">
-          <input type="checkbox" id="checkbox" />
-          <div className={styles.slider}></div>
-        </label>
-        <em id="lightDark" className={styles.em}>
-          Enable Dark Mode!
-        </em>
-      </div> */}
-
           <Link to="/Cart" className={styles.cartLink}>
             <div className={styles.headertotal}>
               <FontAwesomeIcon icon={faShoppingCart} />
               <p>Cart Total: ${totalPrice.toFixed(2)}</p>
             </div>
           </Link>
-      {isAuthenticated ? (
+      {isLoggedIn ? (
         <div className={styles.headerRight}>
           <div className={styles.loggedIn}>
-            <h3 className={styles.username}>{user.name}</h3>
+            <Link to="/profile"><h3 className={styles.username}>{user.email}</h3></Link>
             <LogoutButton />
           </div>
         </div>
@@ -70,6 +61,7 @@ export default function Header() {
         <div className={styles.headerRight}>
           <div className={styles.loggedOut}>
             <LoginButton />
+            <RegisterButton />
           </div>
         </div>
       )}

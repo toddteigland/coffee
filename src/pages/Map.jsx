@@ -43,7 +43,7 @@ export default function Map() {
           console.log("Error fetching coffee shop data:", error);
         });
     }
-  }, [mapInstance, center]);
+  }, [mapInstance, center, mapLoaded]);
 
   const handleMarkerClick = (id, lat, lng) => {
     mapRef?.panTo({ lat, lng });

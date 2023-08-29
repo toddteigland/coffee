@@ -6,15 +6,23 @@ import styles from "../styles/product.module.css";
 import { cartContext, currentStoreContext } from "../App";
 import products from "../products.json";
 import Customize from "../components/Customize";
+import { useAuth } from "../components/AuthContext";
 
 export default function Product() {
   const [currentStore] = useContext(currentStoreContext);
   const [currentOrder, setCurrentOrder] = useContext(cartContext);
   const [selectStorePopup, setSelectStorePopup] = useState(false);
   const [itemAddedPopup, setItemAddedPopup] = useState(false);
+  const [isLoggedInPopup, setIsLoggedInPopup] = useState(false);
   const [itemAdded, setItemAdded] = useState("");
+  const {isLoggedIn} = useAuth();
 
   const handleAddToCartClick = (name, price) => {
+    if (!isLoggedIn) {
+      setIsLoggedInPopup(true);
+      return
+      
+    }
     if (Object.keys(currentStore).length === 0) {
       setSelectStorePopup(true);
       return;
@@ -68,6 +76,12 @@ export default function Product() {
         <div className={styles["selectStore-popup"]}>
           <p>Please select a store to proceed:</p>
           <Link to="/storelocator">Go to Store Locator</Link>
+        </div>
+      )}
+
+      {isLoggedInPopup && (
+        <div className={styles["selectStore-popup"]}>
+          <p>Please <Link to="/login">Login</Link> to add Products to your Cart</p>
         </div>
       )}
     </div>
