@@ -6,6 +6,7 @@ export default function StoreRegister() {
   const [formData, setFormData] = useState({
     storeName: "",
     storeAddress: "",
+    googleId:"",
     email: "",
     password: "",
   });
@@ -30,6 +31,7 @@ export default function StoreRegister() {
         body: JSON.stringify({
           storeName: formData.storeName,
           storeAddress: formData.storeAddress,
+          googleId: formData.googleId,
           email: formData.email,
           password: formData.password,
         }),
@@ -71,6 +73,15 @@ export default function StoreRegister() {
             type="text"
             name="storeAddress"
             value={formData.storeAddress}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Store Id:
+          <input
+            type="text"
+            name="googleId"
+            value={formData.googleId}
             onChange={handleChange}
           />
         </label>

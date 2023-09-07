@@ -11,7 +11,6 @@ export default function Profile() {
   useEffect(() => {
     // Check if user exists before fetching orders
     if (user && user.id) {
-      // Async function to fetch user orders
       const fetchUserOrders = async () => {
         try {
           const response = await fetch(
@@ -29,6 +28,7 @@ export default function Profile() {
     }
   }, [user]); // Dependency array now includes 'user'
 
+  // Get store name for each order
   const getStoreName = (storeInfo) => {
     try {
       const parsedStoreInfo = JSON.parse(storeInfo);
@@ -64,7 +64,7 @@ export default function Profile() {
                   {order.items.map((item, i) => (
                     <li key={i}>
                       {/* List out each item's details */}
-                      Item ID: {item.id}, Product: {item.coffee_type}, Size:{" "}
+                      Product: {item.coffee_type}, Size:{" "}
                       {item.size}, Price: {item.price.toFixed(2)}, Extras:{" "}
                       {JSON.stringify(item.extras)}
                     </li>

@@ -7,9 +7,11 @@ import styles from "../styles/map.module.css";
 import mapstyles from "../styles/mapstyles";
 import { currentStoreContext } from "../App";
 
+const googleMapsApiKey = process.env.REACT_APP_GOOG_API;
+
 export default function Map() {
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: "AIzaSyAnpVMayNLao-lvX0H3_rOl-MbjcKAuaCw",
+    googleMapsApiKey: googleMapsApiKey,
   });
 
   const center = useMemo(() => ({ lat: 49.263805, lng: -122.882565 }), []);
@@ -38,6 +40,7 @@ export default function Map() {
         .then((response) => {
           const coffeeShops = response.data.results;
           setCoffeeShops(coffeeShops);
+          console.log('!COFFEE SHOPS:', coffeeShops);
         })
         .catch((error) => {
           console.log("Error fetching coffee shop data:", error);
@@ -55,9 +58,26 @@ export default function Map() {
     setIsOpen(false);
   };
 
-  const handleOrderHereClick = (shopName, shopAddress) => {
-    setCurrentStore({Name: shopName, Address: shopAddress});
+  const handleOrderHereClick = async (shopName, shopAddress, place_id, id) => {
+    const shopData = await verifyShopRegistration(place_id);
+    console.log('TRYING TO FIND THE SHOP.ID: ', shopData.id);
+    if (shopData.isRegistered) {
+      setCurrentStore({ Name: shopName, Address: shopAddress, placeId: place_id, id: shopData.id });
+    } else {
+      alert("This coffee shop is not available for orders yet.");
+    }
   };
+
+const verifyShopRegistration = async (place_id) => {
+  try {
+    const response = await axios.get(`http://localhost:8080/checkRegisteredShop?place_id=${place_id}`);
+    return response.data; 
+  } catch (error) {
+    console.error("Error verifying shop registration:", error);
+    return false;
+  }
+};
+
 
   return (
     <div className={styles.selectContainer}>
@@ -113,7 +133,7 @@ export default function Map() {
                       <Link
                         to="/Products"
                         onClick={() =>
-                          handleOrderHereClick(shop.name, shop.vicinity)
+                          handleOrderHereClick(shop.name, shop.vicinity, shop.place_id)
                         }
                       >
                         Click Here to Order

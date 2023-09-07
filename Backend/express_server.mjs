@@ -1,15 +1,23 @@
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+
 import express from "express";
 import axios from "axios";
 import bodyParser from "body-parser";
-import { db, connectToDatabase } from "./db/connection.cjs"; // Import the default export
+import { db, connectToDatabase } from "./db/connection.cjs";
 import bcrypt from "bcryptjs";
-import { log } from "console";
+import http from "http";
+import { Server } from "socket.io";
+import { Sequelize } from "sequelize";
 
 const app = express();
-const port = 8080; // Replace with the desired port number
-// const bcrypt = require("bcryptjs");
+const port = 8080;
 
-app.use(bodyParser.json());
 
 // Allow CORS for requests from localhost:3000
 app.use((req, res, next) => {
@@ -17,11 +25,13 @@ app.use((req, res, next) => {
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS"); // Add OPTIONS method
-  next();
-});
-
+    );
+    res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS"); // Add OPTIONS method
+    next();
+  });
+  
+  app.use(bodyParser.json());
+  
 // Handle OPTIONS requests
 app.options("*", (req, res) => {
   res.status(200).send();
@@ -33,27 +43,145 @@ app.get("/coffee-shops", async (req, res) => {
   const radius = 8000;
   const type = "cafe";
   const keyword = "coffee";
-  const apiKey = "AIzaSyAnpVMayNLao-lvX0H3_rOl-MbjcKAuaCw"; // Replace with your Maps API key
+  const apiKey = process.env.BACK_END_GOOG_API;
 
   try {
     const apiUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius}&type=${type}&keyword=${keyword}&key=${apiKey}`;
     const response = await axios.get(apiUrl);
     res.json(response.data);
-    console.log("Data = ", response.data);
   } catch (error) {
     console.error("Error fetching coffee shop data:", error.message);
     res.status(500).json({ error: "Error fetching coffee shop data" });
   }
 });
 
-// Start the server -------------------------------------------------------------------------------------------------------------
-async function startServer() {
-  await connectToDatabase();
-  app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+// SET UP SEQUELIZE ----------------------------------------------------------------------------------------------
+const sequelize = new Sequelize('coffee', 'postgres', '1662', {
+  host: 'localhost',
+  dialect: 'postgres'
+});
+
+
+const Order = sequelize.define('Order', {
+  id: {
+    type: Sequelize.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  user_id: {
+    type: Sequelize.STRING,
+  },
+  created_at: {
+    type: Sequelize.STRING,
+  },
+  store_id: {
+    type: Sequelize.INTEGER,
+  },
+  storeinfo: {
+    type: Sequelize.STRING,
+  }
+}, {
+  hooks: {
+    afterCreate: (order) => {
+      console.log("A new order has been created in the database");
+
+      io.emit('new_order', order.get()); // Get plain object from instance
+    },
+  },
+});
+
+let lastOrderId = 0;
+
+// SET UP WEB SOCKETS AND SERVER ------------------------------------------------------------------------------
+const httpServer = http.createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:3000",  // allow to server to accept request from different origin
+    methods: ["GET", "POST", "get", "post"]  // set allowed methods
+  }
+});
+
+io.on("connection", (socket) => {
+  console.log("New client connected");
+  // setTimeout(() => {
+  //   io.emit("new_order", { id: "test_id", username: "test_user" });
+  // }, 5000);
+
+  socket.on("new_order", (order) => {
+    io.emit("new_order", order); // Broadcast to all stores
+    console.log('NEW ORDER RECEIVED', order);
   });
+
+  socket.on("completed_order", (orderId) => {
+    io.emit("completed_order", orderId); // Broadcast to all stores
+  });
+
+  socket.on("picked_up_order", (orderId) => {
+    io.emit("picked_up_order", orderId); // Broadcast to all stores
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+  });
+  
+  socket.on("error", (error) => {
+    console.log("Socket Error: ", error);
+  });
+
+});
+ 
+httpServer.listen(8080, () => {
+  console.log("Web Socket Server running on port 8080");
+}); 
+
+// Start the server
+async function startServer() {
+  try {
+    await sequelize.authenticate() // Test the connection
+    .then(() => {
+      console.log('Sequelize connection successful.');
+    })
+    .catch(err => {
+      console.log('Sequelize connection failed: ', err);
+    });
+    await sequelize.sync(); // Sync models with the database
+    console.log('Database connection successful.');
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+    return;
+  };
+
+  // Start polling for new orders
+  setInterval(async () => {
+    try {
+      // Replace 'Orders' with your actual Sequelize model
+      const newOrders = await Order.findAll({
+        where: {
+          id: {
+            [Sequelize.Op.gt]: lastOrderId  // Fetch orders where id > lastOrderId
+          }
+        },
+        order: [
+          ['id', 'ASC'] // Sort by 'id' in ascending order
+        ]
+      });
+
+      if (newOrders && newOrders.length > 0) {
+        // Update lastOrderId for next polling cycle
+        lastOrderId = newOrders[newOrders.length - 1].id;
+
+        console.log(`Fetched new orders: ${JSON.stringify(newOrders, null, 2)}`);
+
+        // Emit new orders to all connected WebSocket clients
+        io.emit('new_order', newOrders);
+      }
+    } catch (error) {
+      console.error('Error while polling for new orders:', error);
+    }
+  }, 5000);  // Poll every 5000 milliseconds (5 seconds)
 }
 
+connectToDatabase();
 startServer();
 
 // REGISTER USERS TO DB -------------------------------------------------------------------------------------------------------------
@@ -128,7 +256,6 @@ app.get("/getUserInfo", async (req, res) => {
 // USER LOGIN -------------------------------------------------------------------------------------------------------------
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-
   try {
     // Check if the user with the given email exists in the database
     const userQuery = "SELECT * FROM users WHERE email = $1";
@@ -148,7 +275,7 @@ app.post("/login", async (req, res) => {
     }
 
     // Successful login
-    res.status(200).json({ message: "Login successful", userId: user.email });
+    res.status(200).json( user );
   } catch (error) {
     console.error("Error logging in User:", error);
     res.status(500).json({ error: "Error logging in User" });
@@ -158,7 +285,6 @@ app.post("/login", async (req, res) => {
 // STORE LOGIN ------------------------------------------------------------------------------------------------------
 app.post("/store-login", async (req, res) => {
   const { email, password } = req.body;
-  console.log("STORE LOGIN REQ BODY: ", req.body);
 
   try {
     // Check if the user with the given email exists in the database
@@ -208,9 +334,10 @@ app.post("/store-register", async (req, res) =>{
   console.log("Received Store Registration Request: ", {
     storeName: req.body.storeName,
     storeAddress: req.body.storeAddress,
+    googleId: req.body.storeId,
     email: req.body.email
   });
-  const { storeName, storeAddress, email, password } = req.body;
+  const { storeName, storeAddress, googleId, email, password } = req.body;
 
   try {
     //Check if store email is already in DB
@@ -225,31 +352,49 @@ app.post("/store-register", async (req, res) =>{
     const hashed_password = bcrypt.hashSync(password, 10);
  
     const query = `
-      INSERT INTO stores (store_name, store_address, email, hashed_password)
-      VALUES ($1,$2,$3,$4)
+      INSERT INTO stores (store_name, store_address, google_id, email, hashed_password)
+      VALUES ($1,$2,$3,$4,$5)
       RETURNING id`;
-    const values = [storeName, storeAddress, email, hashed_password];
+    const values = [storeName, storeAddress, googleId, email, hashed_password];
     const result = await db.query(query, values);
 
-    res.status(201).json({ storeId: result.rows[0].id });
+    res.status(201).json({ storeId: result.rows[0].id, Info: result.rows[0] });
   } catch (error) {
     console.error("Error registering store:", error);
     res.status(500).json({ error: "Error registering store" });
   }
 })
 
+//VERIFY STORE IS REGISTERED ---------------------------------------------------------------------------------------
+app.get("/checkRegisteredShop", async (req, res) => {
+  const { place_id } = req.query;
+
+  try {
+    const shopQuery = `SELECT * FROM stores WHERE google_id = $1`;
+    const result = await db.query(shopQuery, [place_id]);
+
+    if (result.rows.length > 0) {
+      res.json({ isRegistered: true, id: result.rows[0].id });
+    } else {
+      res.json({ isRegistered: false });
+    }
+  } catch (error) {
+    console.error("Error checking shop:", error);
+    res.status(500).json({ error: "Error checking shop" });
+  }
+});
 
 //ORDERS --------------------------------------------------------------------------------------------------------------------
 app.post("/placeOrder", async (req, res) => {
   try {
-    const { userId, items, storeInfo } = req.body;
+    const { userId, items, storeId, storeInfo } = req.body;
 
     const orderQuery = `
-    INSERT INTO orders (user_id, created_at, storeInfo)
-    VALUES ($1, CURRENT_TIMESTAMP, $2)
+    INSERT INTO orders (user_id, created_at, store_id, storeInfo)
+    VALUES ($1, CURRENT_TIMESTAMP, $2, $3)
     RETURNING id`;
 
-    const orderValues = [userId, JSON.stringify(storeInfo)];
+    const orderValues = [userId, storeId, JSON.stringify(storeInfo)];
     const orderResult = await db.query(orderQuery, orderValues);
     const orderId = orderResult.rows[0].id;
 
@@ -336,15 +481,14 @@ app.get("/userOrders/:userId", async (req, res) => {
 });
 
 // QUERY ORDERS FOR A STORE -----------------------------------------------------------------------------------
-app.get('/store-dashboad/:storeId'), async (req, res) => {
+app.get("/storeOrders/:storeId", async (req, res) => {
   try {
     const {storeId} = req.params;
-
     //Query orders by storeId
     const ordersQuery = `
     SELECT * 
     FROM orders
-    WHERE user_id = $1`;
+    WHERE store_id = $1`;
 
   const ordersResult = await db.query(ordersQuery, [storeId]);
 
@@ -384,4 +528,49 @@ app.get('/store-dashboad/:storeId'), async (req, res) => {
         console.error("Error fetching store orders:", error);
         res.status(500).json({ error: "Error fetching store orders" });
       }
-}
+});
+
+//TRACK ORDERS PER MONTH ----------------------------------------------------------------------
+app.get('/ordersPerMonth', async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT
+        DATE_TRUNC('month', created_at) as month,
+        COUNT(*)
+      FROM
+        orders
+      GROUP BY
+        month
+      ORDER BY
+        month ASC
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching monthly order data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+//TRACK PRICE PER ORDER
+app.get("/pricePerOrder", async (req, res) => {
+  const { storeId } = req.query; // Get the storeId from the query parameters
+  try {
+    const query = `
+      SELECT orders.id AS order_id, SUM(order_items.price) AS order_total
+      FROM orders
+      JOIN order_items ON orders.id = order_items.order_id
+      WHERE orders.store_id = $1
+      GROUP BY orders.id
+      ORDER BY orders.id;
+    `;
+
+    const result = await db.query(query, [storeId]);
+    res.json(result.rows);
+
+  } catch (error) {
+    console.error("Error fetching price per order:", error);
+    res.status(500).json({ error: "Error fetching price per order" });
+  }
+});
+
+

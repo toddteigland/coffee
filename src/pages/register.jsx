@@ -11,7 +11,7 @@ export default function Register() {
         <h3>Register as User</h3>
       </div>
       </Link>
-      <Link to="/business-register">
+      <Link to="/store-register">
       <div className={styles.card}>
         <h3>Register as Business</h3>
       </div>

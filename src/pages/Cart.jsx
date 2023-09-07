@@ -4,9 +4,13 @@ import { Link } from "react-router-dom";
 import styles from "../styles/cart.module.css";
 import { cartContext, currentStoreContext } from "../App";
 import { useAuth } from "../components/AuthContext";
+import { useStore } from "../components/StoreContext";
+import { useSocket } from "../components/SocketContext";
 
 export default function Cart() {
+  const socket = useSocket();
   const {user} = useAuth();
+  const {store} = useStore();
   const [currentStore] = useContext(currentStoreContext);
   const [currentOrder, setCurrentOrder] = useContext(cartContext);
   const totalPrice = Object.values(currentOrder).reduce(
@@ -18,7 +22,6 @@ export default function Cart() {
     setCurrentOrder((prevOrder) => {
       const updatedOrder = { ...prevOrder };
       delete updatedOrder[itemId];
-      console.log("UPDATED ORDER: ", updatedOrder);
       return updatedOrder;
     });
   };
@@ -36,9 +39,9 @@ export default function Cart() {
     const orderPayload = {
       userId: user? user.id: null,
       items: items,
-      storeInfo: currentStore
+      storeId: currentStore.id,
+      storeInfo: { ...currentStore, placeId: currentStore.placeId }
     };
-
     try {
       const response = await fetch("http://localhost:8080/placeOrder", {
         method: "POST",
@@ -51,6 +54,8 @@ export default function Cart() {
       if (response.ok) {
         const responseData = await response.json();
         console.log("Order submitted successfully. Order ID:", responseData.orderId);
+        socket.emit("new_order", orderPayload);
+        console.log('Emitting new order');
         //Empty Cart after submission
         setCurrentOrder({});
       } else {
@@ -113,7 +118,7 @@ export default function Cart() {
         </ul>
       </div>
       <p>Total: <strong>${totalPrice.toFixed(2)}</strong></p>
-      <button onClick={handleSubmitOrder}>Submit Order</button>
+      <button onClick={handleSubmitOrder}>Place Order</button>
     </div>
   );
 }

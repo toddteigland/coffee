@@ -1,0 +1,27 @@
+@import 'colors.css';
+
+
+.orderContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.newOrders {
+  width: 30%;
+  border: 1px solid black;
+}
+
+.completedOrders {
+  width: 30%;
+  border: 1px solid red;
+}
+
+.pickedUpOrders {
+  width: 30%;
+  border: 1px solid blue;
+}
+
+.order {
+  border: 1px solid orange;
+}
