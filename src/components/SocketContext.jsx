@@ -18,13 +18,13 @@ export const SocketProvider = ({ children }) => {
     setSocket(newSocket);
 
     newSocket.on('connect', () => {
-      console.log('!Socket is now connected');
+      // console.log('!Socket is now connected');
     });
 
-    console.log('NEW SOCKET CONNECTED?? ', newSocket.connected);
+    // console.log('NEW SOCKET CONNECTED?? ', newSocket.c onnected);
     // Specify how to clean up after this effect:
     return () => {
-      console.log('Cleaning up Socket');
+      // console.log('Cleaning up Socket');
       newSocket.close();
     };
   }, []);

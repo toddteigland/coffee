@@ -40,7 +40,6 @@ export default function Map() {
         .then((response) => {
           const coffeeShops = response.data.results;
           setCoffeeShops(coffeeShops);
-          console.log('!COFFEE SHOPS:', coffeeShops);
         })
         .catch((error) => {
           console.log("Error fetching coffee shop data:", error);
@@ -60,7 +59,6 @@ export default function Map() {
 
   const handleOrderHereClick = async (shopName, shopAddress, place_id, id) => {
     const shopData = await verifyShopRegistration(place_id);
-    console.log('TRYING TO FIND THE SHOP.ID: ', shopData.id);
     if (shopData.isRegistered) {
       setCurrentStore({ Name: shopName, Address: shopAddress, placeId: place_id, id: shopData.id });
     } else {

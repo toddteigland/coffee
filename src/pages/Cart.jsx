@@ -40,7 +40,7 @@ export default function Cart() {
       userId: user? user.id: null,
       items: items,
       storeId: currentStore.id,
-      storeInfo: { ...currentStore, placeId: currentStore.placeId }
+      storeInfo: { ...currentStore, placeId: currentStore.placeId },
     };
     try {
       const response = await fetch("http://localhost:8080/placeOrder", {
@@ -53,9 +53,9 @@ export default function Cart() {
 
       if (response.ok) {
         const responseData = await response.json();
-        console.log("Order submitted successfully. Order ID:", responseData.orderId);
+        // console.log("Order submitted successfully. Order ID:", responseData.orderId);
         socket.emit("new_order", orderPayload);
-        console.log('Emitting new order');
+        alert("Order Placed")
         //Empty Cart after submission
         setCurrentOrder({});
       } else {

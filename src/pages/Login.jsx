@@ -37,20 +37,17 @@ export default function Login() {
           },
           body: JSON.stringify(formData),
         });
-        console.log("FRont end login request, RESPONSE.OK!!!:", response.body);
         
         if (response.ok) {
           
           // Fetch user data from server
           const userInfoResponse = await fetch(`http://localhost:8080/getUserInfo?email=${formData.email}`);
           const userInfo = await userInfoResponse.json();
-          console.log('!!USER INFO: ', userInfo);
           
           
           setIsLoggedIn(true);
           setUser(userInfo);
           // Successful login, you can redirect or handle accordingly
-          console.log("User Successfully Logged in ", user);
           navigate("/products", { replace: true });
         } else {
           // Failed login, handle accordingly
@@ -79,7 +76,6 @@ export default function Login() {
           setStore(storeInfo);
           setIsStoreLoggedIn(true);
           navigate("/store-dashboard", { replace: true })
-          console.log("Store Login Success", store);
 
         } else {
           setLoginErrorPopup(true)

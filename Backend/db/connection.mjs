@@ -1,4 +1,8 @@
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 const { Client } = require('pg');
+
+// import * as pg from 'pg';
 
 const dbParams = {
   host: 'localhost',
@@ -14,4 +18,4 @@ async function connectToDatabase() {
   await db.connect();
 }
 
-module.exports = { db, connectToDatabase };
+export default { db, connectToDatabase };

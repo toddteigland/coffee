@@ -9,15 +9,16 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 import express from "express";
 import axios from "axios";
 import bodyParser from "body-parser";
-import { db, connectToDatabase } from "./db/connection.cjs";
+import dbConnection from "./db/connection.mjs";
 import bcrypt from "bcryptjs";
 import http from "http";
 import { Server } from "socket.io";
+// import dbConnection from "./db/connection.mjs";
 import { Sequelize } from "sequelize";
 
 const app = express();
 const port = 8080;
-
+const { db, connectToDatabase } = dbConnection;
 
 // Allow CORS for requests from localhost:3000
 app.use((req, res, next) => {
@@ -55,41 +56,6 @@ app.get("/coffee-shops", async (req, res) => {
   }
 });
 
-// SET UP SEQUELIZE ----------------------------------------------------------------------------------------------
-const sequelize = new Sequelize('coffee', 'postgres', '1662', {
-  host: 'localhost',
-  dialect: 'postgres'
-});
-
-
-const Order = sequelize.define('Order', {
-  id: {
-    type: Sequelize.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  },
-  user_id: {
-    type: Sequelize.STRING,
-  },
-  created_at: {
-    type: Sequelize.STRING,
-  },
-  store_id: {
-    type: Sequelize.INTEGER,
-  },
-  storeinfo: {
-    type: Sequelize.STRING,
-  }
-}, {
-  hooks: {
-    afterCreate: (order) => {
-      console.log("A new order has been created in the database");
-
-      io.emit('new_order', order.get()); // Get plain object from instance
-    },
-  },
-});
-
 let lastOrderId = 0;
 
 // SET UP WEB SOCKETS AND SERVER ------------------------------------------------------------------------------
@@ -103,13 +69,10 @@ const io = new Server(httpServer, {
 
 io.on("connection", (socket) => {
   console.log("New client connected");
-  // setTimeout(() => {
-  //   io.emit("new_order", { id: "test_id", username: "test_user" });
-  // }, 5000);
 
   socket.on("new_order", (order) => {
-    io.emit("new_order", order); // Broadcast to all stores
-    console.log('NEW ORDER RECEIVED', order);
+    // io.emit("new_order", order); // Broadcast to all stores
+    // console.log('NEW ORDER RECEIVED', order);
   });
 
   socket.on("completed_order", (orderId) => {
@@ -134,53 +97,78 @@ httpServer.listen(8080, () => {
   console.log("Web Socket Server running on port 8080");
 }); 
 
-// Start the server
+
 async function startServer() {
   try {
-    await sequelize.authenticate() // Test the connection
-    .then(() => {
-      console.log('Sequelize connection successful.');
-    })
-    .catch(err => {
-      console.log('Sequelize connection failed: ', err);
-    });
-    await sequelize.sync(); // Sync models with the database
     console.log('Database connection successful.');
   } catch (error) {
     console.error('Unable to connect to the database:', error);
     return;
   };
 
-  // Start polling for new orders
   setInterval(async () => {
     try {
-      // Replace 'Orders' with your actual Sequelize model
-      const newOrders = await Order.findAll({
-        where: {
-          id: {
-            [Sequelize.Op.gt]: lastOrderId  // Fetch orders where id > lastOrderId
-          }
-        },
-        order: [
-          ['id', 'ASC'] // Sort by 'id' in ascending order
-        ]
-      });
-
+      const res = await db.query(
+        `
+        SELECT 
+          orders.id, orders.user_id, orders.created_at, orders.store_id, orders.storeinfo,
+          order_items.id AS item_id, order_items.coffee_type, order_items.size, order_items.price, order_items.extras 
+        FROM 
+          orders 
+        LEFT JOIN 
+          order_items ON orders.id = order_items.order_id 
+        WHERE 
+          orders.id > $1
+        ORDER BY 
+          orders.id ASC, order_items.id ASC
+        `,
+        [lastOrderId]
+      );
+  
+      const newOrders = res.rows;
+  
       if (newOrders && newOrders.length > 0) {
         // Update lastOrderId for next polling cycle
         lastOrderId = newOrders[newOrders.length - 1].id;
-
-        console.log(`Fetched new orders: ${JSON.stringify(newOrders, null, 2)}`);
-
+  
+        // Group the items by order ID
+        const ordersGrouped = newOrders.reduce((acc, order) => {
+          if (!acc[order.id]) {
+            acc[order.id] = {
+              id: order.id,
+              user_id: order.user_id,
+              created_at: order.created_at,
+              store_id: order.store_id,
+              storeinfo: order.storeinfo,
+              items: [],
+            };
+          }
+          if (order.item_id) {
+            acc[order.id].items.push({
+              id: order.item_id,
+              coffee_type: order.coffee_type,
+              size: order.size,
+              price: order.price,
+              extras: order.extras,
+            });
+          }
+          return acc;
+        }, {});
+  
+        // Convert the grouped orders into an array
+        const ordersArray = Object.values(ordersGrouped);
+  
+        console.log(`Fetched new orders: ${JSON.stringify(ordersArray, null, 2)}`);
+  
         // Emit new orders to all connected WebSocket clients
-        io.emit('new_order', newOrders);
+        io.emit('new_order', ordersArray);
       }
     } catch (error) {
       console.error('Error while polling for new orders:', error);
     }
-  }, 5000);  // Poll every 5000 milliseconds (5 seconds)
+  }, 5000);
+   
 }
-
 connectToDatabase();
 startServer();
 
@@ -390,13 +378,13 @@ app.post("/placeOrder", async (req, res) => {
     const { userId, items, storeId, storeInfo } = req.body;
 
     const orderQuery = `
-    INSERT INTO orders (user_id, created_at, store_id, storeInfo)
-    VALUES ($1, CURRENT_TIMESTAMP, $2, $3)
-    RETURNING id`;
+      INSERT INTO orders (user_id, created_at, store_id, storeInfo)
+      VALUES ($1, CURRENT_TIMESTAMP, $2, $3)
+      RETURNING id, created_at`;
 
     const orderValues = [userId, storeId, JSON.stringify(storeInfo)];
     const orderResult = await db.query(orderQuery, orderValues);
-    const orderId = orderResult.rows[0].id;
+    const { id: orderId, created_at: created_at } = orderResult.rows[0];
 
     // Insert items into the order_items table
     const itemQueries = items.map((item) => {

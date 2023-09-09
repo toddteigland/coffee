@@ -5,23 +5,39 @@
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-items: center;
 }
+
 .newOrders {
   width: 30%;
-  border: 1px solid black;
+  border: 1px solid green;
+  min-height: 100px;
+}
+.newOrders h3 {
+  text-align: center;
+  
 }
 
 .completedOrders {
   width: 30%;
   border: 1px solid red;
+  min-height: 100px;
+
+}
+.completedOrders h3 {
+  text-align: center;
 }
 
 .pickedUpOrders {
   width: 30%;
   border: 1px solid blue;
+  min-height: 100px;
+
+}
+.pickedUpOrders h3 {
+  text-align: center;
 }
 
 .order {
-  border: 1px solid orange;
+  border: 2px solid orange;
+  margin: 5px;
 }
