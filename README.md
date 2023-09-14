@@ -6,6 +6,6 @@
 
 
 ## Screenshots
-![image](https://github.com/toddteigland/coffee/assets/115186660/96510b45-4064-4e1a-9643-53fbda92ad5f)
+![image](https://github.com/toddteigland/coffee/blob/2f531af9b3166ae082e7897d3a1b41ee0b7cde23/Screenshot%20homepage.png)
 ![image](https://github.com/toddteigland/coffee/blob/f7aec956277c287106f215f59e3099b541e37867/Screenshot%20storeLocator.png)
-![image](https://github.com/toddteigland/coffee/assets/115186660/57d45c1d-c4f8-46ce-bb4d-103fa9f91d16)
+![image](https://github.com/toddteigland/coffee/blob/2f531af9b3166ae082e7897d3a1b41ee0b7cde23/Screenshot%20products.png)
