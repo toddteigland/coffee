@@ -2,6 +2,7 @@
 
 
 ## A full stack coffee ordering application.
+### Leveraging React, CSS, ReChart, SocketIO, PostGresQL
 ## With a user interface as well as a dashboard for stores.
 
 
