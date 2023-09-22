@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useSocket } from '../components/SocketContext';
+import { useOrders } from './OrderContext';
 import styles from '../styles/orderCompletion.module.css'
 
 const ItemType = {
@@ -15,11 +16,11 @@ const DraggableOrder = ({ order, index }) => {
   }));
 
   return (
-    <div ref={ref} key={order.id} style={{ border: '1px solid black', margin: '5px', padding: '5px' }}>
+    <div ref={ref} key={order.id} className={styles.draggableOrders}>
       {/* ... Your existing order display logic */}
       {console.log('DRAGGABLE ORDERS: ', order)}
-      <p>Customer: {order.user_id} </p>
-      <p>Time: {order.created_at} </p>
+      <p>Customer: {order.first_name} {order.last_name} </p>
+      <p>Time: {new Date(order.created_at).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })} </p>
       <ul>
         {order.items && order.items.map((item, itemIndex) => (
           <li key={itemIndex}>
@@ -57,9 +58,14 @@ const DroppableOrderContainer = ({ orders, setOrders, removeOrderFromPreviousLis
 
 export default function OrderManagement() {
   const socket = useSocket();
-  const [newOrders, setNewOrders] = useState([]);
-  const [completedOrders, setCompletedOrders] = useState([]);
-  const [pickedUpOrders, setPickedUpOrders] = useState([]);
+  const {
+    newOrders,
+    setNewOrders,
+    completedOrders,
+    setCompletedOrders,
+    pickedUpOrders,
+    setPickedUpOrders,
+  } = useOrders();
 
   const removeOrderFromNewOrders = (index) => {
     setNewOrders((prevOrders) => prevOrders.filter((_, idx) => idx !== index));

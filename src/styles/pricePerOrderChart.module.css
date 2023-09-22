@@ -1,6 +1,8 @@
 @import 'colors.css';
 
 .ppoChartContainer {
-  width: 1100;
-  height: 600px;
+  width: 1200px;
+  height: 500px;
+border: 1px solid black;
+margin-left: 20px;
 }

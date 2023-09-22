@@ -9,6 +9,7 @@ import { cartContext } from "../App";
 import LoginButton from "../components/loginButton";
 import LogoutButton from "../components/logoutButton";
 import RegisterButton from "../components/registerButton";
+import useLogout from "../hooks/logout.jsx";
  
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,23 +19,49 @@ export default function Header() {
   const [currentOrder] = useContext(cartContext);
   const { isLoggedIn, user } = useAuth();
   const { isStoreLoggedIn, store } = useStore();
+  const handleLogout = useLogout();
+
 
   const totalPrice = Object.values(currentOrder).reduce(
     (acc, item) => acc + parseFloat(item.price),
     0.0
   );
 
-  const options = [
-    { label: "Home", value: "home" },
-    { label: "Store Locator", value: "storelocator" },
-    { label: "Products", value: "products" },
-    { label: "Cart", value: "cart" },
+  let options;
 
-    // { label: 'Sign Out', value: 'signout' },
-  ];
+  if (isStoreLoggedIn) {
+    options = [
+      { label: "Home", value: "home" },
+      { label: "Dashboard", value: "store-dashboard" },
+      { label: "Logout" },
+    ];
+  } else if (isLoggedIn) {
+    options = [
+      { label: "Home", value: "home" },
+      { label: "Dashboard", value: "profile" },
+      { label: "Store Locator", value: "storelocator" },
+      { label: "Products", value: "products" },
+      { label: "Cart", value: "cart" },
+      { label: "Logout" },
+    ];
+  } else {
+    options = [
+      { label: "Home", value: "home" },
+      { label: "Store Locator", value: "storelocator" },
+      { label: "Products", value: "products" },
+      { label: "Login", value: "login" },
+      { label: "Register", value: "register" },
+    ];
+  }
+    
 
   const handleOptionSelect = (selectedOption) => {
-    console.log("Selected option:", selectedOption);
+    if (selectedOption.label === 'Logout') {
+      handleLogout();
+
+    } else {
+      console.log("Selected option:", selectedOption.label);
+    }
   };
 
   return (
@@ -45,13 +72,14 @@ export default function Header() {
           <h1>On the Run</h1>
         </Link>
       </div>
-
+          {isLoggedIn && 
           <Link to="/Cart" className={styles.cartLink}>
             <div className={styles.headertotal}>
               <FontAwesomeIcon icon={faShoppingCart} />
               <p>Cart Total: ${totalPrice.toFixed(2)}</p>
             </div>
           </Link>
+          }
           {isLoggedIn ? (
         <div className={styles.headerRight}>
           <div className={styles.loggedIn}>

@@ -6,12 +6,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleDoubleDown} from '@fortawesome/free-solid-svg-icons';
 
 
-export default function Dropdown ({ options }) {
+export default function Dropdown ({ options, onSelect }) {
   const [showOptions, setShowOptions] = useState(false);
   const dropdownRef = useRef(null);
 
   const handleOptionClick = (option) => {
     setShowOptions(false);
+    onSelect(option);
   };
 
   const handleClickOutside = (event) => {

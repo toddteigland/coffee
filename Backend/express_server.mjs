@@ -1,10 +1,9 @@
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
-
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 import express from "express";
 import axios from "axios";
@@ -26,13 +25,13 @@ app.use((req, res, next) => {
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
-    );
-    res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS"); // Add OPTIONS method
-    next();
-  });
-  
-  app.use(bodyParser.json());
-  
+  );
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS"); // Add OPTIONS method
+  next();
+});
+
+app.use(bodyParser.json());
+
 // Handle OPTIONS requests
 app.options("*", (req, res) => {
   res.status(200).send();
@@ -62,9 +61,9 @@ let lastOrderId = 0;
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:3000",  // allow to server to accept request from different origin
-    methods: ["GET", "POST", "get", "post"]  // set allowed methods
-  }
+    origin: "http://localhost:3000", // allow to server to accept request from different origin
+    methods: ["GET", "POST", "get", "post"], // set allowed methods
+  },
 });
 
 io.on("connection", (socket) => {
@@ -86,25 +85,23 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("Client disconnected");
   });
-  
+
   socket.on("error", (error) => {
     console.log("Socket Error: ", error);
   });
-
 });
- 
+
 httpServer.listen(8080, () => {
   console.log("Web Socket Server running on port 8080");
-}); 
-
+});
 
 async function startServer() {
   try {
-    console.log('Database connection successful.');
+    console.log("Database connection successful.");
   } catch (error) {
-    console.error('Unable to connect to the database:', error);
+    console.error("Unable to connect to the database:", error);
     return;
-  };
+  }
 
   setInterval(async () => {
     try {
@@ -112,25 +109,29 @@ async function startServer() {
         `
         SELECT 
           orders.id, orders.user_id, orders.created_at, orders.store_id, orders.storeinfo,
-          order_items.id AS item_id, order_items.coffee_type, order_items.size, order_items.price, order_items.extras 
+          order_items.id AS item_id, order_items.coffee_type, order_items.size, order_items.price, order_items.extras,
+          users.first_name, users.last_name
         FROM 
           orders 
         LEFT JOIN 
           order_items ON orders.id = order_items.order_id 
+        LEFT JOIN
+          users ON orders.user_id = users.id
         WHERE 
           orders.id > $1
         ORDER BY 
           orders.id ASC, order_items.id ASC
+
         `,
         [lastOrderId]
       );
-  
+
       const newOrders = res.rows;
-  
+
       if (newOrders && newOrders.length > 0) {
         // Update lastOrderId for next polling cycle
         lastOrderId = newOrders[newOrders.length - 1].id;
-  
+
         // Group the items by order ID
         const ordersGrouped = newOrders.reduce((acc, order) => {
           if (!acc[order.id]) {
@@ -140,9 +141,12 @@ async function startServer() {
               created_at: order.created_at,
               store_id: order.store_id,
               storeinfo: order.storeinfo,
+              first_name: order.first_name, // Add first name
+              last_name: order.last_name,   // Add last name
               items: [],
             };
           }
+          
           if (order.item_id) {
             acc[order.id].items.push({
               id: order.item_id,
@@ -154,20 +158,19 @@ async function startServer() {
           }
           return acc;
         }, {});
-  
+
         // Convert the grouped orders into an array
         const ordersArray = Object.values(ordersGrouped);
-  
-        console.log(`Fetched new orders: ${JSON.stringify(ordersArray, null, 2)}`);
-  
+
+        // console.log(`Fetched new orders: ${JSON.stringify(ordersArray, null, 2)}`);
+
         // Emit new orders to all connected WebSocket clients
-        io.emit('new_order', ordersArray);
+        io.emit("new_order", ordersArray);
       }
     } catch (error) {
-      console.error('Error while polling for new orders:', error);
+      console.error("Error while polling for new orders:", error);
     }
   }, 5000);
-   
 }
 connectToDatabase();
 startServer();
@@ -263,12 +266,49 @@ app.post("/login", async (req, res) => {
     }
 
     // Successful login
-    res.status(200).json( user );
+    res.status(200).json(user);
   } catch (error) {
     console.error("Error logging in User:", error);
     res.status(500).json({ error: "Error logging in User" });
   }
 });
+
+// USER CHANGE PASSWORD -------------------------------------------------------------------------------------------------------
+app.post("/change-password", async (req, res) => {
+  const { email, currentPassword, newPassword } = req.body;
+  // console.log('REQ BODY: ', req.body);
+  try {
+    const userQuery = `SELECT * FROM users WHERE email = $1`;
+    const userResult = await db.query(userQuery, [email]);
+
+    // console.log('USER RESULT: ', userResult);
+    if (userResult.rows.length === 0) {
+      return res.status(400).json({ error: "User not found" });
+    }
+
+    const user = userResult.rows[0];
+    
+    // Check if currentPassword matches the stored hash
+    const isMatch = await bcrypt.compare(currentPassword, user.hashed_password);
+
+    if (!isMatch) {
+      return res.status(400).json({ error: "Incorrect current password" });
+    }
+
+    // Hash the new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    
+    // Update the new hashed password in the database
+    const updateQuery = `UPDATE users SET hashed_password = $1 WHERE email = $2`;
+    await db.query(updateQuery, [hashedNewPassword, email]);
+
+    res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    console.error("Error Changing user password:", error);
+    res.status(500).json({ error: "Error changing user password" });
+  }
+});
+
 
 // STORE LOGIN ------------------------------------------------------------------------------------------------------
 app.post("/store-login", async (req, res) => {
@@ -318,12 +358,12 @@ app.get("/getStoreInfo", async (req, res) => {
   }
 });
 //REGISTER STORES -------------------------------------------------------------------------------------------------------------
-app.post("/store-register", async (req, res) =>{
+app.post("/store-register", async (req, res) => {
   console.log("Received Store Registration Request: ", {
     storeName: req.body.storeName,
     storeAddress: req.body.storeAddress,
     googleId: req.body.storeId,
-    email: req.body.email
+    email: req.body.email,
   });
   const { storeName, storeAddress, googleId, email, password } = req.body;
 
@@ -338,7 +378,7 @@ app.post("/store-register", async (req, res) =>{
     }
 
     const hashed_password = bcrypt.hashSync(password, 10);
- 
+
     const query = `
       INSERT INTO stores (store_name, store_address, google_id, email, hashed_password)
       VALUES ($1,$2,$3,$4,$5)
@@ -351,7 +391,7 @@ app.post("/store-register", async (req, res) =>{
     console.error("Error registering store:", error);
     res.status(500).json({ error: "Error registering store" });
   }
-})
+});
 
 //VERIFY STORE IS REGISTERED ---------------------------------------------------------------------------------------
 app.get("/checkRegisteredShop", async (req, res) => {
@@ -420,14 +460,18 @@ app.post("/placeOrder", async (req, res) => {
 app.get("/userOrders/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
+    const { page = 1, limit = 2} = req.query;
 
+    const offset = (page - 1) * limit;
     // Query to fetch orders by user ID
     const ordersQuery = `
       SELECT * 
       FROM orders
-      WHERE user_id = $1`;
+      WHERE user_id = $1
+      ORDER BY created_at DESC
+      LIMIT $2 OFFSET $3`;
 
-    const ordersResult = await db.query(ordersQuery, [userId]);
+    const ordersResult = await db.query(ordersQuery, [userId, limit, offset]);
 
     // Query to fetch related order items for each order
     const itemQueries = ordersResult.rows.map((order) => {
@@ -471,19 +515,31 @@ app.get("/userOrders/:userId", async (req, res) => {
 // QUERY ORDERS FOR A STORE -----------------------------------------------------------------------------------
 app.get("/storeOrders/:storeId", async (req, res) => {
   try {
-    const {storeId} = req.params;
+    const { storeId } = req.params;
+    const { startDate, endDate } = req.query;
+
+    let dateFilter = '';
+    if (startDate && endDate) {
+      dateFilter = `AND created_at BETWEEN $2 AND $3`;
+    }
     //Query orders by storeId
     const ordersQuery = `
     SELECT * 
     FROM orders
-    WHERE store_id = $1`;
+    WHERE store_id = $1
+    ${dateFilter}
+    ORDER BY created_at DESC`;
 
-  const ordersResult = await db.query(ordersQuery, [storeId]);
+    const queryParams = [storeId];
+    if (startDate && endDate) {
+      queryParams.push(startDate, endDate);
+    }
+    const ordersResult = await db.query(ordersQuery, queryParams);
 
-      // Query to fetch related order items for each order
-      const itemQueries = ordersResult.rows.map((order) => {
-        return db.query(
-          `
+    // Query to fetch related order items for each order
+    const itemQueries = ordersResult.rows.map((order) => {
+      return db.query(
+        `
         SELECT 
         orders.id AS order_id,
         orders.created_at AS order_created_at,
@@ -498,28 +554,28 @@ app.get("/storeOrders/:storeId", async (req, res) => {
         order_items ON orders.id = order_items.order_id
           WHERE order_id = $1
         `,
-          [order.id]
-        );
-      });
-  
-      const itemsResults = await Promise.all(itemQueries);
-  
-      // Combining orders with their respective items
-      const storeOrders = ordersResult.rows.map((order, index) => {
-        return {
-          ...order,
-          items: itemsResults[index].rows,
-        };
-      });
-      res.status(200).json(storeOrders);
-      } catch (error) {
-        console.error("Error fetching store orders:", error);
-        res.status(500).json({ error: "Error fetching store orders" });
-      }
+        [order.id]
+      );
+    });
+
+    const itemsResults = await Promise.all(itemQueries);
+
+    // Combining orders with their respective items
+    const storeOrders = ordersResult.rows.map((order, index) => {
+      return {
+        ...order,
+        items: itemsResults[index].rows,
+      };
+    });
+    res.status(200).json(storeOrders);
+  } catch (error) {
+    console.error("Error fetching store orders:", error);
+    res.status(500).json({ error: "Error fetching store orders" });
+  }
 });
 
 //TRACK ORDERS PER MONTH ----------------------------------------------------------------------
-app.get('/ordersPerMonth', async (req, res) => {
+app.get("/ordersPerMonth", async (req, res) => {
   try {
     const result = await db.query(`
       SELECT
@@ -554,11 +610,8 @@ app.get("/pricePerOrder", async (req, res) => {
 
     const result = await db.query(query, [storeId]);
     res.json(result.rows);
-
   } catch (error) {
     console.error("Error fetching price per order:", error);
     res.status(500).json({ error: "Error fetching price per order" });
   }
 });
-
-

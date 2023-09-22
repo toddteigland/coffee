@@ -15,13 +15,13 @@ export default function Product() {
   const [itemAddedPopup, setItemAddedPopup] = useState(false);
   const [isLoggedInPopup, setIsLoggedInPopup] = useState(false);
   const [itemAdded, setItemAdded] = useState("");
-  const {isLoggedIn} = useAuth();
+  const { isLoggedIn } = useAuth();
+  const [selectedSize, setSelectedSize] = useState("");
 
   const handleAddToCartClick = (name, price) => {
     if (!isLoggedIn) {
       setIsLoggedInPopup(true);
-      return
-      
+      return;
     }
     if (Object.keys(currentStore).length === 0) {
       setSelectStorePopup(true);
@@ -30,7 +30,7 @@ export default function Product() {
     const uniqueId = uuidv4();
     setCurrentOrder((prevOrder) => ({
       ...prevOrder,
-      [uniqueId]: { name, price },
+      [uniqueId]: { name, price: price[selectedSize], size: selectedSize },
     }));
     setItemAdded(name);
     setItemAddedPopup(true);
@@ -42,7 +42,8 @@ export default function Product() {
   return (
     <div className={styles.productcontainer}>
       <h1>{currentStore?.Name}</h1>
-      <h2>{currentStore?.Address}</h2>
+      <p>{currentStore?.Address}</p>
+      <h2>Products</h2>
       <div className={styles.grid}>
         {products.map((product) => {
           return (
@@ -50,7 +51,40 @@ export default function Product() {
               <img src={product.image} alt={`Preview of ${product.title}`} />
               <h3>{product.title}</h3>
               <p>{product.description}</p>
-              <p>${product.price}</p>
+              <div>
+                {/* <p>Size:</p> */}
+                <label>S</label>
+                <input
+                  type="radio"
+                  name="radio"
+                  value="S"
+                  onChange={(e) => setSelectedSize(e.target.value)}
+                ></input>
+                <label>M</label>
+                <input
+                  type="radio"
+                  name="radio"
+                  value="M"
+                  onChange={(e) => setSelectedSize(e.target.value)}
+                ></input>
+                <label>L</label>
+                <input
+                  type="radio"
+                  name="radio"
+                  value="L"
+                  onChange={(e) => setSelectedSize(e.target.value)}
+                ></input>
+                <label>XL</label>
+                <input
+                  type="radio"
+                  name="radio"
+                  value="XL"
+                  onChange={(e) => setSelectedSize(e.target.value)}
+                ></input>
+              </div>
+              <p>
+                ${selectedSize ? product.price[selectedSize] : `${Math.min(...Object.values(product.price))} - ${Math.max(...Object.values(product.price) )}`}
+              </p>
               <div className={styles.buttons}>
                 <button
                   onClick={() =>
@@ -81,7 +115,9 @@ export default function Product() {
 
       {isLoggedInPopup && (
         <div className={styles["selectStore-popup"]}>
-          <p>Please <Link to="/login">Login</Link> to add Products to your Cart</p>
+          <p>
+            Please <Link to="/login">Login</Link> to add Products to your Cart
+          </p>
         </div>
       )}
     </div>

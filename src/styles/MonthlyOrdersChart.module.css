@@ -1,6 +1,9 @@
 @import 'colors.css';
 
-#ordersChart {
-  width: 400px,
-  height 600px
+.ordersChart {
+  width: 1200px;
+  height: 500px;
+border: 1px solid black;
+margin-left: 20px;
+
 }

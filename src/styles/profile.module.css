@@ -1,0 +1,62 @@
+@import 'colors.css';
+
+.dashboardContainer {
+  background-color: var(--background-color);
+  background-image: var(--background-image);
+  font-family: 'Montserrat';
+  padding: 10px 0px 40px 0px;
+}
+
+.header {
+  text-align: center;
+  color: var(--color)
+}
+
+.ordersContainer {
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  margin: 40px 60px;
+  padding: 20px;
+  box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.2);
+  background-color: var(--primary-color);
+  color: var(--color);
+}
+
+.order {
+  border-top: 1px solid black;
+  
+}
+
+.pagination {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.2);
+  background-color: var(--primary-color);
+  width: 180px;
+  margin-left: 45%;
+  padding-top: 15px;
+}
+.pagination p {
+  color: var(--color)
+}
+
+.pageButtons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 5px;
+  width: 45px;
+}
+
+.passwordChange {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  gap: 3px;
+  padding: 5px;
+  margin-top: 10px;
+  border: 1px solid var(--border-color);
+}

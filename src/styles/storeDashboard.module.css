@@ -1,9 +1,35 @@
 @import 'colors.css';
 
+
+.dashboardHeader {
+  text-align: center;
+  color: var(--secondary-color)
+}
 .chartsContainer {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  height: 1300px;
-  width: auto;
+  gap: 25px;
+  /* justify-content: space-between; */
+  /* height: 1125px; */
+  /* width: auto; */
+}
+
+.dashboardContainers {
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  margin: 40px 60px;
+  padding: 20px;
+  box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.2);
+}
+
+.filter {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+}
+
+button {
+  background-color: var(--secondary-color);
+  border: 1px solid var(--color);
+  border-radius: 2px;
 }

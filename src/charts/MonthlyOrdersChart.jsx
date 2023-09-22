@@ -1,5 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Label } from 'recharts';
+import React, { useEffect, useState } from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Label,
+} from "recharts";
+import styles from "../styles/MonthlyOrdersChart.module.css";
 
 export default function MonthlyOrdersChart() {
   const [chartData, setChartData] = useState([]);
@@ -10,7 +19,10 @@ export default function MonthlyOrdersChart() {
     const data = await response.json();
     setChartData(
       data.map((row) => ({
-        month: new Date(row.month).toLocaleString('default', { month: 'long', year: 'numeric' }),
+        month: new Date(row.month).toLocaleString("default", {
+          month: "short",
+          year: "numeric",
+        }),
         count: row.count,
       }))
     );
@@ -21,17 +33,27 @@ export default function MonthlyOrdersChart() {
   }, []);
 
   return (
-    <div>
-      <BarChart width={1000} height={500} data={chartData}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="month" >
-        {/* <Label value="Month" angle={0} position="insideBottom" offset={-10} /> */}
+    <div className={styles.ordersChart}>
+      <BarChart
+        width={1200}
+        height={500}
+        data={chartData}
+        margin={{ left: 20 }}
+      >
+        <CartesianGrid strokeDasharray="3" fill="#f1e1e1" />
+        <XAxis dataKey="month">
+          {/* <Label value="Month" angle={0} position="insideBottom" offset={-10} /> */}
         </XAxis>
-        <YAxis domain={[0, 'dataMax + 20']} tickCount={10}>
-        <Label value="Number of Orders" angle={-90} position="insideLef" offset={10} />
+        <YAxis domain={[0, "dataMax + 20"]} tickCount={10}>
+          <Label
+            value="Number of Orders"
+            angle={-90}
+            position="insideLeft"
+            offset={5}
+          />
         </YAxis>
         <Tooltip />
-        <Bar dataKey="count" fill="#8d6d6d" />
+        <Bar dataKey="count" fill="#8d6d6d" name="Number of Orders" />
       </BarChart>
     </div>
   );

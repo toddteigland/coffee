@@ -19,6 +19,7 @@ import StoreDashboard from "./pages/StoreDashboard";
 import { AuthProvider } from "./components/AuthContext";
 import { StoreProvider } from "./components/StoreContext";
 import { SocketProvider } from "./components/SocketContext";
+import { OrderProvider } from "./components/OrderContext";
 
 export const currentStoreContext = createContext();
 export const cartContext = createContext();
@@ -34,28 +35,33 @@ export default function App() {
           <currentStoreContext.Provider value={[currentStore, setCurrentStore]}>
             <cartContext.Provider value={[currentOrder, setCurrentOrder]}>
               <SocketProvider>
-                <Header />
+                <OrderProvider>
+                  <Header />
 
-                <ScrollToTop>
-                  <Routes>
-                    <Route path="/" element={<Navigate to="/home" />} />
-                    <Route path="/home" element={<Home />} />
-                    <Route path="/products" element={<Product />} />
-                    <Route path="/storelocator" element={<Map />} />
-                    <Route path="/cart" element={<Cart />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/user-register" element={<UserRegister />} />
-                    <Route path="/store-register" element={<StoreRegister />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route
-                      path="/store-dashboard"
-                      element={<StoreDashboard />}
-                    />
-                  </Routes>
-                </ScrollToTop>
+                  <ScrollToTop>
+                    <Routes>
+                      <Route path="/" element={<Navigate to="/home" />} />
+                      <Route path="/home" element={<Home />} />
+                      <Route path="/products" element={<Product />} />
+                      <Route path="/storelocator" element={<Map />} />
+                      <Route path="/cart" element={<Cart />} />
+                      <Route path="/register" element={<Register />} />
+                      <Route path="/user-register" element={<UserRegister />} />
+                      <Route
+                        path="/store-register"
+                        element={<StoreRegister />}
+                      />
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/profile" element={<Profile />} />
+                      <Route
+                        path="/store-dashboard"
+                        element={<StoreDashboard />}
+                      />
+                    </Routes>
+                  </ScrollToTop>
 
-                <Footer />
+                  <Footer />
+                </OrderProvider>
               </SocketProvider>
             </cartContext.Provider>
           </currentStoreContext.Provider>

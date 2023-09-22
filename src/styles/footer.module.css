@@ -6,7 +6,7 @@
   flex-direction: row;
   justify-content: flex-end;
   background-color: inherit;
-  color: var(--color);
+  color: var(--border-color);
   position: fixed;
   bottom: 2%;
   right: 0%;
@@ -18,14 +18,17 @@
 .themeswitchwrapper {
   display: flex;
   align-items: center;
-  border: 1px solid var(--color);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 2px;
+  max-width: 240px;
 }
 
 .themeswitchwrapper .em {
   margin-left: 10px;
+  margin-right: 10px;
   font-size: 1rem;
+  color: var(--color)
 }
 
 .themeswitch {
@@ -40,7 +43,7 @@
 }
 
 .slider {
-  background-color: #ccc;
+  background-color: var(--primary-color);
   bottom: 0;
   cursor: pointer;
   left: 0;
@@ -64,7 +67,7 @@
 }
 
 input:checked + .slider {
-  background-color: #66bb6a;
+  background-color: var(--secondary-color);
 }
 
 input:checked + .slider:before {

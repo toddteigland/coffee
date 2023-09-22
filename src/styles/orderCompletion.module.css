@@ -11,6 +11,8 @@
   width: 30%;
   border: 1px solid green;
   min-height: 100px;
+  box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
 }
 .newOrders h3 {
   text-align: center;
@@ -21,6 +23,8 @@
   width: 30%;
   border: 1px solid red;
   min-height: 100px;
+  box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
 
 }
 .completedOrders h3 {
@@ -31,6 +35,8 @@
   width: 30%;
   border: 1px solid blue;
   min-height: 100px;
+  box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
 
 }
 .pickedUpOrders h3 {
@@ -40,4 +46,12 @@
 .order {
   border: 2px solid orange;
   margin: 5px;
+}
+
+.draggableOrders {
+  border: 1px solid black;
+  margin: 5px;
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
 }

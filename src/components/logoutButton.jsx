@@ -2,33 +2,18 @@ import React, { useState } from "react";
 import { useAuth } from "./AuthContext";
 import { useStore } from "./StoreContext";
 import { useNavigate } from "react-router";
+import useLogout from "../hooks/logout.jsx";
+
 
 export default function LogoutButton() {
-  const { logout } = useAuth();
-  const { logoutStore, store } = useStore();
-  const navigate = useNavigate();
 
-const handleLogout = () => {
-  if (!store) {
-    logout();
-    navigate("/products", { replace: true })
-  } else {
-    logoutStore();
-    navigate("/products", { replace: true})
-  }
-}
+  const handleLogout = useLogout();
 
   return (
     <div>
-      {!store ? (
         <button onClick={handleLogout}>
           Log Out
         </button>
-      ) : (
-        <button onClick={handleLogout}>
-          Log Out
-        </button>
-      )}
     </div>
   );
 };

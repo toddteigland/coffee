@@ -29,12 +29,12 @@ BEGIN
         order_id,
         CASE 
           WHEN i % 3 = 0 THEN 'Latte'
-          WHEN i % 3 = 1 THEN 'Espresso'
-          ELSE 'Cappuccino'
+          WHEN i % 3 = 1 THEN 'London Fog'
+          ELSE 'Mocha'
         END,
         CASE
-          WHEN i % 2 = 0 THEN 'Small'
-          ELSE 'Large'
+          WHEN i % 2 = 0 THEN 'S'
+          ELSE 'L'
         END,
         CASE 
           WHEN i % 3 = 0 THEN 4.50
