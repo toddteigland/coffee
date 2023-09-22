@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "./AuthContext";
 import { useStore } from "./StoreContext";
 import { useNavigate } from "react-router";
-import useLogout from "../hooks/logout.jsx";
+import useLogout from "../hooks/logout";
 
 
 export default function LogoutButton() {
